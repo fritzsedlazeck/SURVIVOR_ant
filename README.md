@@ -20,10 +20,9 @@ cd ../bin/survivor_ant-core-0.1.0
 
 **************************************
 
+USAGE: 
 
  ./survivor_ant --help
-
-USAGE: 
 
    ./survivor_ant  [-o <string>] [-l <int>] [-v <string>] [-g <string>] [-b
                    <string>] [--anno_distance <int>] [--svs_distance <int>]
