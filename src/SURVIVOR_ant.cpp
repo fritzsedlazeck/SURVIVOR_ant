@@ -20,7 +20,7 @@ Parameter* Parameter::m_pInstance = NULL;
 //cmake -D CMAKE_C_COMPILER=/opt/local/bin/gcc-mp-4.7 -D CMAKE_CXX_COMPILER=/opt/local/bin/g++-mp-4.7 ..
 
 void read_parameters(int argc, char *argv[]) {
-	TCLAP::CmdLine cmd("Sniffles version 0.0.1", ' ', "0.0.1");
+	TCLAP::CmdLine cmd("SURVIVOR_ant version 0.0.1", ' ', "0.0.1");
 	TCLAP::ValueArg<std::string> arg_svvcf("i", "svvcf", "The vcf file that we should annotate", true, "", "string");
 	TCLAP::ValueArg<std::string> arg_vcf("v", "vcf", "VCF input file name(s)", false, "", "string");
 	TCLAP::ValueArg<std::string> arg_bed("b", "bed", " bed annotation(s)", false, "", "string");
