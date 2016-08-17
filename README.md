@@ -8,7 +8,7 @@ INSTALL:
 Download SURVIVOR:
 ```
 git clone https://github.com/fritzsedlazeck/SURVIVOR_ant.git
-```
+
 
 cd SURVIVOR_ant
 mkdir build
@@ -16,7 +16,7 @@ cd build
 cmake ..
 make
 cd ../bin/survivor_ant-core-0.1.0
-
+```
 
 **************************************
 
