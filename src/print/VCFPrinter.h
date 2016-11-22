@@ -12,7 +12,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
-
+#include <stdio.h>
 class VCFPrinter{
 private:
 	FILE *file;
