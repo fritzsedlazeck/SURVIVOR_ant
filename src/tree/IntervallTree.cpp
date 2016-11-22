@@ -115,17 +115,17 @@ void IntervallTree::add_vcf(position_str start, position_str stop, short type, i
 }
 
 // Inserting a node
-void IntervallTree::insert(position_str start, position_str stop, short type,std::string line, int num_reads, int caller_id, TNode *&p) {
+void IntervallTree::insert(position_str start, position_str stop, short type,std::string line, int num_reads, int caller_id, bool is_secondary, TNode *&p) {
 
 	if (p == NULL) {
-		p = new TNode(start, stop, type,line, num_reads, caller_id);
+		p = new TNode(start, stop, type,line, num_reads, caller_id,is_secondary);
 		if (p == NULL) {
 			std::cout << "Out of Space\n" << std::endl;
 		}
 	} else {
 		long score = overlap(start, stop, type, p->get_data()); //comparison function
 		if (score > 0) {
-			insert(start, stop, type,line, num_reads, caller_id, p->left);
+			insert(start, stop, type,line, num_reads, caller_id,is_secondary, p->left);
 			if ((bsheight(p->left) - bsheight(p->right)) == 2) {
 				score = overlap(start, stop, type, p->left->get_data());
 				if (score > 0) {
@@ -135,7 +135,7 @@ void IntervallTree::insert(position_str start, position_str stop, short type,std
 				}
 			}
 		} else if (score < 0) {
-			insert(start, stop, type,line, num_reads, caller_id, p->right);
+			insert(start, stop, type,line, num_reads, caller_id, is_secondary,p->right);
 			if ((bsheight(p->right) - bsheight(p->left)) == 2) {
 				score = overlap(start, stop, type, p->right->get_data());
 				if (score < 0) {

@@ -41,7 +41,7 @@ void read_parameters(int argc, char *argv[]) {
 
 	//parse cmd:
 	cmd.parse(argc, argv);
-	std::cout<<"BED FILE: "<< arg_bed.getValue()<<std::endl;
+	std::cout << "BED FILE: " << arg_bed.getValue() << std::endl;
 	Parameter::Instance()->parse_intput(Parameter::Instance()->bed_files, arg_bed.getValue());
 	Parameter::Instance()->parse_intput(Parameter::Instance()->vcf_files, arg_vcf.getValue());
 	Parameter::Instance()->parse_intput(Parameter::Instance()->gff_files, arg_gff.getValue());
@@ -51,7 +51,7 @@ void read_parameters(int argc, char *argv[]) {
 	Parameter::Instance()->sv_vcf = arg_svvcf.getValue();
 	Parameter::Instance()->svs_dist = arg_svsdist.getValue();
 	Parameter::Instance()->anno_dist = arg_annodist.getValue();
-	Parameter::Instance()->use_type=false;
+	Parameter::Instance()->use_type = false;
 }
 
 //TODO: check overlap for annotation depending on the type!!!
@@ -71,13 +71,13 @@ int main(int argc, char *argv[]) {
 		//Run through the vcf files to merge them!
 		VCFParser * parser_vcf = new VCFParser();
 		std::vector<std::string> entry_lines;
-		std::string header=parser_vcf->get_header(Parameter::Instance()->sv_vcf);
+		std::string header = parser_vcf->get_header(Parameter::Instance()->sv_vcf);
 		std::vector<entry_str> entries = parser_vcf->parse_entries(Parameter::Instance()->sv_vcf);
 		for (size_t j = 0; j < entries.size(); j++) {
 			if (entries[j].stop.chr.empty()) {
 				entries[j].stop.chr = entries[j].start.chr; //some files do just report the first chr;
 			}
-			bst.insert(entries[j].start, entries[j].stop, entries[j].type,entries[j].line, entries[j].num_reads, 0, root);
+			bst.insert(entries[j].start, entries[j].stop, entries[j].type, entries[j].line, entries[j].num_reads, entries[j].is_secondary, 0, root);
 		}
 
 		//Annotate with additional vcf files:
@@ -99,8 +99,8 @@ int main(int argc, char *argv[]) {
 			std::vector<Anno_str> entries = parser_bed->parse_bed(Parameter::Instance()->bed_files[i]);
 			//annotate tree;
 			for (size_t j = 0; j < entries.size(); j++) {
-				if( entries[j].exp.empty()){
-					 entries[j].exp=Parameter::Instance()->bed_files[i];
+				if (entries[j].exp.empty()) {
+					entries[j].exp = Parameter::Instance()->bed_files[i];
 				}
 				bst.add_anno(entries[j].start, entries[j].stop, entries[j].exp, root);
 			}
@@ -124,33 +124,33 @@ int main(int argc, char *argv[]) {
 		std::vector<SVS_Node *> points;
 		bst.get_breakpoints(root, points);
 
-
 		for (size_t i = 0; i < points.size(); i++) {
 			//we have to collapse the tra again!
 			if (points[i]->type == 3) {
-				if (i + 1 < points.size() && (points[i]->stop.position == points[i]->start.position && points[i + 1]->stop.position == points[i]->start.position)) {
-					points[i]->stop.position = -1;
-					points[i]->start.position = -1;
-					points[i]->annotations.clear();
-					points[i]->caller.clear();
-					//is prob a place holder for the next!
-					for (size_t j = 0; j < points[i]->annotations.size(); j++) {
-						points[i + 1]->annotations.push_back(points[i]->annotations[j]);
+				if (points[i]->is_secondary) {
+					std::cout<<"SEARCH"<<std::endl;
+					for (size_t j = 0; j < points.size(); j++) {
+						if (!points[j]->is_secondary && (points[i]->start.position == points[j]->stop.position && points[i]->type == points[j]->type)) {
+							//found!
+							for (size_t t = 0; t < points[i]->annotations.size(); t++) {
+								points[j]->annotations.push_back(points[j]->annotations[t]);
+							}
+						}
+
 					}
 				}
 			}
 		}
-
-		std::cout<<"start printing"<<std::endl;
+		std::cout << "start printing" << std::endl;
 		//print:
 		std::pair<int, int> summary;
-		int num=0;
+		int num = 0;
 		std::vector<std::string> file;
 
-		std::cout<<"print entries "<<std::endl;
+		std::cout << "print entries " << std::endl;
 		printer->print_header(header);
 		for (size_t i = 0; i < points.size(); i++) {
-			if (!points[i]->caller.empty()) {
+			if (!points[i]->is_secondary) {
 				num++;
 				printer->print_orig_entry(points[i], i, summary);
 			}

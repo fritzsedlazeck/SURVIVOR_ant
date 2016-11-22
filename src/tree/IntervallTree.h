@@ -25,7 +25,7 @@ private:
 	void inorder_addvcf(position_str start, position_str stop, short type,int caller,TNode * p, TNode * root);
 	void inorder_addanno(position_str start, position_str stop, std::string msg, TNode * p, TNode * root);
 public:
-	void insert(position_str start, position_str stop ,short type,std::string line,int num_reads,int caller_id, TNode *&p);
+	void insert(position_str start, position_str stop ,short type,std::string line,int num_reads,int caller_id, bool is_secondary, TNode *&p);
 	void del(SVS_Node * point, TNode *&);
 	int deletemin(TNode *&);
 	void find(SVS_Node * point, TNode *&);

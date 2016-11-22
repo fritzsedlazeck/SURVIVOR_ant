@@ -17,6 +17,7 @@ struct position_str {
 };
 
 struct entry_str {
+	bool is_secondary;
 	int num_reads;
 	position_str start;
 	position_str stop;
@@ -57,6 +58,7 @@ public:
 	std::vector<SV_str> caller;
 	std::vector<Anno_str> annotations;
 	std::string line;
+	bool is_secondary;
 };
 /*
 class Parser {

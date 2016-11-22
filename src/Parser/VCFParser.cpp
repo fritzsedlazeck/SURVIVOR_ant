@@ -37,12 +37,28 @@ position_str VCFParser::parse_stop(const char * buffer) {
 }
 
 position_str parse_pos(char * buffer) {
-	std::string tmp = std::string(buffer);
-	size_t found = tmp.find(':');
+	size_t i=0;
+	int count=0;
 	position_str pos;
+	while(buffer[i]!='\t'){
+		if(count==1 && ((buffer[i]!='[' ||buffer[i]!=']' ) && buffer[i]!=':' )){
+			pos.chr+=buffer[i];
+		}
+		if(count==2&& buffer[i-1]==':'){
+			pos.position=atoi(&buffer[i]);
+		}
+		if((buffer[i]==']'||buffer[i]=='[') ||buffer[i]==':'  ){
+			count++;
+		}
+		i++;
+	}
+
+	/*std::string tmp = std::string(buffer);
+	size_t found = tmp.find(':');
+
 	pos.chr = tmp.substr(0, found);
 	found++;
-	pos.position = atoi(&tmp[found]);
+	pos.position = atoi(&tmp[found]);*/
 	//std::cout << pos.chr << "| " << pos.pos << "|" << std::endl;
 	return pos;
 }
@@ -140,6 +156,7 @@ std::vector<entry_str> VCFParser::parse_entries(std::string filename) {
 		if (buffer[0] != '#') {
 			int count = 0;
 			entry_str tmp;
+			tmp.is_secondary=false;
 			tmp.stop.position = -1;
 			tmp.type = -1;
 			tmp.line=std::string(buffer);
@@ -203,6 +220,7 @@ std::vector<entry_str> VCFParser::parse_entries(std::string filename) {
 			if (tmp.type == 3) { //a bit of a hack because of tra and their annotation!
 				entry_str tmp2;
 				tmp2 = tmp;
+				tmp2.is_secondary=true;
 				tmp2.start = tmp2.stop;
 				tmp2.num_reads = entries.size() + 1;
 				entries.push_back(tmp2);

@@ -45,12 +45,13 @@ public:
 		height = 0;
 	}
 
-	TNode(position_str start, position_str stop, short type, std::string line,int num_reads, int caller_id) {
+	TNode(position_str start, position_str stop, short type, std::string line,int num_reads, int caller_id,bool is_secondary) {
 		this->data = new SVS_Node();
 		this->data->start = start;
 		this->data->stop = stop;
 		this->data->type = type;
 		this->data->line=line;
+		this->data->is_secondary=is_secondary;
 		init();
 		//TODO: check that!
 		for (int i = 0; i < Parameter::Instance()->max_caller; i++) {
