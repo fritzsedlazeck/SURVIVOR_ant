@@ -3,7 +3,7 @@ A framework to annotate SVs (vcf file) with previous known SVs (vcf file) and or
 
 **************************************
 
-INSTALL:
+## INSTALL:
 
 Download SURVIVOR:
 ```
@@ -20,7 +20,13 @@ cd ../bin/survivor_ant-core-0.1.0
 
 **************************************
 
-USAGE: 
+## Test data: 
+Can be found here: 
+https://github.com/NCBI-Hackathons/svcompare
+
+**************************************
+
+## USAGE: 
 
  ./survivor_ant --help
 
@@ -66,7 +72,7 @@ Where:
 
 
 **************************************
-CONTACT:
+## CONTACT:
 
 If you have questions or encounter a problem please contact:
 fritz.sedlazeck@gmail.com
