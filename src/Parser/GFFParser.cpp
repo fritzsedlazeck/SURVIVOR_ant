@@ -12,14 +12,17 @@ std::string parse_name(char * buffer){
 	std::string name;
 	bool flag=false;
 	while(buffer[i]!=';'){
-		if(flag && buffer[i]!='"'){
-			name+=buffer[i];
+		if(flag){
+			if(buffer[i]!='"'){
+				name+=buffer[i];
+			}
 		}
-		if(buffer[i]=='"'){
+		if(buffer[i]=='=' || buffer[i]==' ' ){
 			flag=!flag;
 		}
 		i++;
 	}
+	//std::cout<<"Name: "<<name<<std::endl;
 	return name;
 }
 std::vector<Anno_str> GFFParser::parse_gff(std::string filename) {
@@ -46,7 +49,7 @@ std::vector<Anno_str> GFFParser::parse_gff(std::string filename) {
 				tmp.stop.chr += buffer[i];
 			}
 			if (count == 3 && buffer[i - 1] == '\t') {
-				tmp.exp+='_';
+				tmp.exp='_';
 				tmp.start.position = atoi(&buffer[i]);
 			}
 			if (count == 4 && buffer[i - 1] == '\t') {

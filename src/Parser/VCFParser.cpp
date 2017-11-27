@@ -92,7 +92,7 @@ short get_type(std::string type) {
 	} else if (strncmp(type.c_str(), "INS", 3) == 0) {
 		return 4;
 	} else {
-		std::cerr << "Unknown type!" << std::endl; // << type << std::endl;
+		std::cerr << "Unknown type! "<< std::endl; // << type << std::endl;
 	}
 	return -1;
 }
@@ -184,7 +184,7 @@ std::vector<entry_str> VCFParser::parse_entries(std::string filename) {
 					tmp.stop = parse_stop(&buffer[i]);
 					//std::cout<<tmp.stop.chr<<std::endl;
 				}
-				if (count == 7 && strncmp(&buffer[i], "SVTYPE=", 7) == 0) {
+				if (count == 7 && tmp.type==-1 && strncmp(&buffer[i], "SVTYPE=", 7) == 0) {
 					tmp.type = get_type(std::string(&buffer[i + 7]));
 				}
 				if (count == 4 && buffer[i - 1] == '<') {
@@ -224,6 +224,9 @@ std::vector<entry_str> VCFParser::parse_entries(std::string filename) {
 				tmp2.start = tmp2.stop;
 				tmp2.num_reads = entries.size() + 1;
 				entries.push_back(tmp2);
+			}
+			if(tmp.start.position ==tmp.stop.position){
+				tmp.stop.position++;
 			}
 			entries.push_back(tmp);
 		}

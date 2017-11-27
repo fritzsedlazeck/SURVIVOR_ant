@@ -34,7 +34,11 @@ long IntervallTree::overlap(position_str start, position_str stop, short type, S
 	if (!(Parameter::Instance()->use_type && type != curr_svs->type) && (same_breakpoint(start, curr_svs->start, Parameter::Instance()->svs_dist) && same_breakpoint(stop, curr_svs->stop, Parameter::Instance()->svs_dist))) {
 		return 0; //to be merged
 	}
-	return (start.position - curr_svs->start.position);
+	int dist=(start.position - curr_svs->start.position);
+	if(dist==0){
+		return 1;
+	}
+	return dist;
 }
 
 void IntervallTree::inorder_addanno(position_str start, position_str stop, std::string msg, TNode * p, TNode * root) {

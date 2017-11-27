@@ -41,7 +41,6 @@ void read_parameters(int argc, char *argv[]) {
 
 	//parse cmd:
 	cmd.parse(argc, argv);
-	std::cout << "BED FILE: " << arg_bed.getValue() << std::endl;
 	Parameter::Instance()->parse_intput(Parameter::Instance()->bed_files, arg_bed.getValue());
 	Parameter::Instance()->parse_intput(Parameter::Instance()->vcf_files, arg_vcf.getValue());
 	Parameter::Instance()->parse_intput(Parameter::Instance()->gff_files, arg_gff.getValue());
@@ -67,7 +66,9 @@ int main(int argc, char *argv[]) {
 
 		//TODO extend for parameter.
 		Parameter::Instance()->use_type = true;
+		Parameter::Instance()->max_caller = 1;
 
+		std::cout << "INITIALIZE VCF: " << std::endl;
 		//Run through the vcf files to merge them!
 		VCFParser * parser_vcf = new VCFParser();
 		std::vector<std::string> entry_lines;
@@ -77,9 +78,10 @@ int main(int argc, char *argv[]) {
 			if (entries[j].stop.chr.empty()) {
 				entries[j].stop.chr = entries[j].start.chr; //some files do just report the first chr;
 			}
-			bst.insert(entries[j].start, entries[j].stop, entries[j].type, entries[j].line, entries[j].num_reads, entries[j].is_secondary, 0, root);
+			bst.insert(entries[j].start, entries[j].stop, entries[j].type, entries[j].line, entries[j].num_reads, 0, entries[j].is_secondary, root);
 		}
 
+		std::cout << "Parse VCF: " << Parameter::Instance()->vcf_files.size() << std::endl;
 		//Annotate with additional vcf files:
 		for (size_t i = 0; i < Parameter::Instance()->vcf_files.size(); i++) {
 			std::vector<entry_str> entries = parser_vcf->parse_entries(Parameter::Instance()->vcf_files[i]);
@@ -92,21 +94,21 @@ int main(int argc, char *argv[]) {
 			}
 		}
 		delete parser_vcf;
-
+		std::cout << "Parse BED: " << Parameter::Instance()->bed_files.size() << std::endl;
 		//Annotate with additional bed files:
 		BEDParser * parser_bed = new BEDParser();
 		for (size_t i = 0; i < Parameter::Instance()->bed_files.size(); i++) {
 			std::vector<Anno_str> entries = parser_bed->parse_bed(Parameter::Instance()->bed_files[i]);
 			//annotate tree;
 			for (size_t j = 0; j < entries.size(); j++) {
-				if (entries[j].exp.empty()) {
-					entries[j].exp = Parameter::Instance()->bed_files[i];
-				}
+				//	if (entries[j].exp.empty()) {
+				//		entries[j].exp = Parameter::Instance()->bed_files[i];
+				//	}
 				bst.add_anno(entries[j].start, entries[j].stop, entries[j].exp, root);
 			}
 		}
 		delete parser_bed;
-
+		std::cout << "Parse GFF: " << Parameter::Instance()->gff_files.size() << std::endl;
 		//Annotate with additional gff files:
 		GFFParser * parser_gff = new GFFParser();
 		for (size_t i = 0; i < Parameter::Instance()->gff_files.size(); i++) {
@@ -117,7 +119,7 @@ int main(int argc, char *argv[]) {
 			}
 		}
 		delete parser_gff;
-
+		std::cout << "PRint: " << std::endl;
 		//init printer:
 		VCFPrinter * printer = new VCFPrinter();
 		printer->init();
@@ -126,18 +128,17 @@ int main(int argc, char *argv[]) {
 
 		for (size_t i = 0; i < points.size(); i++) {
 			//we have to collapse the tra again!
-			if (points[i]->type == 3) {
-				if (points[i]->is_secondary) {
-					std::cout<<"SEARCH"<<std::endl;
-					for (size_t j = 0; j < points.size(); j++) {
-						if (!points[j]->is_secondary && (points[i]->start.position == points[j]->stop.position && points[i]->type == points[j]->type)) {
-							//found!
-							for (size_t t = 0; t < points[i]->annotations.size(); t++) {
-								points[j]->annotations.push_back(points[j]->annotations[t]);
-							}
+			if ((points[i]->type == 3 && points[i]->is_secondary) && (!points[i]->annotations.empty() || points[i]->caller.size()>1 )) {
+				//std::cout<<"SEARCH"<<std::endl;
+				for (size_t j = 0; j < points.size(); j++) {
+					if ((!points[j]->is_secondary&& points[j]->type == 3)&& (points[i]->start.position == points[j]->stop.position)) {
+						//found!
+						for (size_t t = 0; t < points[i]->annotations.size(); t++) {
+							points[j]->annotations.push_back(points[i]->annotations[t]);
 						}
-
+						break;
 					}
+
 				}
 			}
 		}

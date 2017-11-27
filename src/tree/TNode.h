@@ -60,7 +60,7 @@ public:
 			tmp.type.clear();
 			data->caller.push_back(tmp);
 		}
-
+	//	std::cout<<"Caller: "<<caller_id<<" vs. "<<this->data->caller.size() <<std::endl;
 		//this->data->caller_info[caller_id].num_reads= //TODO!
 		this->data->caller[caller_id].start.push_back(start);
 		this->data->caller[caller_id].stop.push_back(stop);
