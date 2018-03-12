@@ -18,6 +18,11 @@ make
 cd ../bin/survivor_ant-core-0.1.0
 ```
 
+Note Mac users often have to provide parameters to the cmake command:
+<pre>cmake -D CMAKE_C_COMPILER=/opt/local/bin/gcc-mp-4.7 -D CMAKE_CXX_COMPILER=/opt/local/bin/g++-mp-4.7 .. 
+</pre>
+
+
 **************************************
 
 ## Test data: 
